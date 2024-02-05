@@ -2,11 +2,25 @@
 
 ### Задание 1 – Создать объект counter всеми возможными способами;
 ```js
-    const counter = {};
+    const counter = {count: 0, step: 4};
     
-    const counter = Object.create({});
+    // т.к. первый параметр null, то у созданного объекта не будет встроенных методов объекта (напр. toString)
+    const counter = Object.create(null, {count: {value: 0}, step: {value: 4}});
 
-    const counter = new Object();
+    const counter = new Object({count: 0, step: 4});
+    
+    class CounterClass {
+        constructor (step, initialValue = 0) {
+            this.count = initialValue;
+            this.step = step;
+        }
+    };
+    const counter = new CounterClass(4); //{count: 0, step: 4}
+    const counter = new CounterClass(4, 10); //{count: 10, step: 4}
+
+    const counter = Object.fromEntries([['count', 10], ['step', 4]]);
+
+    const counter = JSON.parse('{"count":10,"step":4}');
 ```
 
 ### Задание 2 – Скопировать объект counter всеми возможными способами;
