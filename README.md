@@ -59,17 +59,24 @@
 
 3) Создать объект Person несколькими способами, после создать объект Person2, чтобы в нём были доступны методы объекта Person. Добавить метод logInfo чтоб он был доступен всем объектам.
 ```js
-    function Person(name, age) {
+       function Person(name, age) {
         this.name = name;
         this.age = age;
         this.sayHello = function () {
             console.log(`Hello, ${this.name}`)
         }
     }
+    Object.prototype.logInfo = function() {
+        console.log(`Info about ${this.name} has been added.`);
+    }
     const person = new Person('Ilya', 11);
+    const person2 = {name: 'Sasha'};
+    person.sayHello.call(person2); // 'Hello, Sasha'
+    person.sayHello(); // 'Hello, Ilya'
+    person.logInfo(); // ''
 ```
 ```js
-    class Person {
+        class Person {
         constructor(name, age) {
             this.name = name;
             this.age = age;
@@ -78,75 +85,75 @@
             console.log(`Hello, ${this.name}`);
         }
     }
-    
+    Object.prototype.logInfo = function() {
+        console.log(`Info about ${this.name} has been added.`);
+    }
+    const person1 = new Person('Ilya', 11);
+    const person2 = Object.create(person1, {name: {value: 'Nikita'}, age: {value: 11}});
+    person1.sayHello(); // 'Hello, Ilya'
+    person2.logInfo(); // 'Hello, Nikita'
 ```
 
 ```js
-    const person = {
+        const person = {
         name: 'Ilya',
         age: 11,
         sayHello () {
             console.log(`Hello, ${this.name}`)
         },
-   }
-   const person1 = {};
-   const person2 = {};
-   person1.__proto__=person; //не стоит использовать геттер/сеттер __proto__
-   Object.setPrototypeOf(person2, person);
-
+        sayGoodby () {
+            console.log(`Goodby, ${this.name}`)
+        },
+    }
+    Object.prototype.logInfo = function() {
+        console.log(`Info about ${this.name} has been added.`);
+    }
+    
+    const person1 = {name: 'Sasha', age: 35};
+    const person2 = {};
+    
+    person1.__proto__=person; //не стоит использовать геттер/сеттер __proto__
+    Object.setPrototypeOf(person2, person);
+    
+    person2.name = 'Nikita';
+    person.sayGoodby(); // 'Goodby, Ilya'
+    person1.logInfo(); // 'Info about Sasha has been added.'
+    person2.sayGoodby(); // 'Goodby, Nikita'    
 ```
 
 5) Создать класс PersonThree c get и set для поля name и конструктором, сделать класс наследник от класса Person.
 ```js
-    class PersonThree {
+        class PersonThree {
         #name;
         constructor(name) {
             this.#name = name
         }
-        
+    
         set name(value) {
             if (!name) throw new Error('Name field should not be empty!');
             this.#name = value;
         }
-        
+    
         get name() {
             return this.#name;
         }
     }
     
-    class Person extends PersonThree {}
+    class Person extends PersonThree {
+        constructor(name, age) {
+            super(name);
+            this.age = age;
+        }
+    }
+    const firstPerson = new Person('Ilya', 11);
+    const secondPerson = new Person('Nikita', 14)
+    console.log(firstPerson) // Person {age: 11, #name: 'Ilya'}
+    secondPerson.name // 'Nikita'
 
 ```
 
 БОНУС:
 1) Написать функцию, которая вернет массив с первой парой чисел, сумма которых равна total:
-```js
-arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-total = 13;
-//result = [4, 9]
-
-const firstSum = (arr, total) => {
-    for (let i = 0; i < arr.length; i++) {
-        if (i + arr[Math.floor(arr.length/2)] < total) {
-            for(let j = Math.floor(arr.length/2); j<arr.length; j++) {
-                if (arr[i] + arr[j] === total) {
-                    return [arr[i], arr[j]]
-                }
-            }
-        } else {
-            for(let j = i+1; j < Math.floor(arr.length/2); j++) {
-                if (arr[i] + arr[j] === total) {
-                    return [arr[i], arr[j]]
-                }
-            }
-        }
-    }
-    return 'The corresponding pair not found!';
-}
-
-firstSum(arr,total);
-```
-
 ```js
 arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 total = 20;
@@ -163,3 +170,5 @@ const firstSum = (arr, total) => {
 firstSum(arr,total);
 ```
 2) Какая сложность у вашего алгоритма ?
+У нас есть цикл, который имеет линейную сложность О(n) и метод includes имеет линейную сложность О(n). 
+Думаю, что сложность алгоритма О(n^2);
