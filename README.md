@@ -110,3 +110,19 @@ fetchUrl('https://google/com&#39;)
 .catch(...) // сatch должен сработать только после 5 неудачных попыток
 получить содержимое страницы внутри fetchUrl
 
+```js
+function fetchUrl(url, count = 5) {
+   return fetch(url)
+           .then((response) => response.json())
+           .then((data) => data)
+           .catch(function (error) {
+              console.log('Error:', error);
+              if (count--) {
+                 fetchUrl(url,count);
+              } else {
+                 return Promise.reject('Failed to fetch')
+              }
+           })
+}
+fetchUrl('https://pokeapi.co/api/v2/pokemon/ditto');
+```
